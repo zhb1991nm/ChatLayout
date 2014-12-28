@@ -69,13 +69,10 @@
         ChatTableViewCellFrame *messageFrame = [[ChatTableViewCellFrame alloc] init];
         ChatMessage *message = [[ChatMessage alloc] init];
         message.dict = dict;
-        
+        message.statusType = MessageSendStatusType_failed;
         messageFrame.showTime = ![previousTime isEqualToString:message.time];
-        
         messageFrame.chatMessage = message;
-        
         previousTime = message.time;
-        
         [_allMessagesFrame addObject:messageFrame];
     }
 }
@@ -297,7 +294,6 @@
 #pragma mark 给数据源增加内容
 
 - (void)addMessageWithContent:(NSString *)content time:(NSString *)time{
-    
     ChatTableViewCellFrame *mf = [[ChatTableViewCellFrame alloc] init];
     ChatMessage *msg = [[ChatMessage alloc] init];
     msg.content = content;

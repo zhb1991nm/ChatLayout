@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-@class ChatTableViewCellFrame;
+#import "ChatTableViewCellFrame.h"
 
 @interface ChatTableViewCell : UITableViewCell
 
 @property (nonatomic,strong) ChatTableViewCellFrame *chatCellFrame;
+
+@property (nonatomic,assign) MessageSendStatusType statusType;
 
 @end

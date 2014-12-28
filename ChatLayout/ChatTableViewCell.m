@@ -15,6 +15,7 @@
     UIButton *_iconView;
     UIButton    *_contentBtn;
     UIButton *_refreshBtn;
+    UIActivityIndicatorView *_loadingIndicator;
 }
 
 @end
@@ -25,7 +26,8 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
-        
+        self.statusType = MessageSendStatusType_waiting;
+
         // 1、创建时间按钮
         _timeBtn = [[UIButton alloc] init];
         [_timeBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -52,11 +54,16 @@
         [_refreshBtn setImage:[UIImage imageNamed:@"chat_refresh.png"] forState:UIControlStateNormal];
         _refreshBtn.hidden = YES;
         [self.contentView addSubview:_refreshBtn];
+        // 5、等待动画
+        _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        _loadingIndicator.hidesWhenStopped = YES;
+        [self.contentView addSubview:_loadingIndicator];
     }
     return self;
 }
 
 -(void)setChatCellFrame:(ChatTableViewCellFrame *)chatCellFrame{
+    self.statusType = chatCellFrame.chatMessage.statusType;
     _chatCellFrame = chatCellFrame;
     ChatMessage *message = chatCellFrame.chatMessage;
     
@@ -89,9 +96,28 @@
         UIEdgeInsets insets = UIEdgeInsetsMake(top, left, bottom, right);
         // 指定为拉伸模式，伸缩后重新赋值
         normal = [normal resizableImageWithCapInsets:insets resizingMode:UIImageResizingModeStretch];
-        
-        _refreshBtn.hidden = NO;
         _refreshBtn.frame = chatCellFrame.refreshF;
+        _loadingIndicator.center = _refreshBtn.center;
+        
+        switch (self.statusType) {
+            case MessageSendStatusType_failed:
+                [_loadingIndicator stopAnimating];
+                _refreshBtn.hidden = NO;
+                break;
+                
+            case MessageSendStatusType_success:
+                [_loadingIndicator stopAnimating];
+                _refreshBtn.hidden = YES;
+                break;
+                
+            case MessageSendStatusType_waiting:
+                [_loadingIndicator startAnimating];
+                _refreshBtn.hidden = YES;
+                break;
+            default:
+                break;
+        }
+        
     }else{
         normal = [UIImage scaledImage:@"chat_from.png" size:CGSizeMake(142.0f / 3.0f, 40.0f)];//47.333 * 40
         
@@ -102,9 +128,13 @@
         UIEdgeInsets insets = UIEdgeInsetsMake(top, left, bottom, right);
         // 指定为拉伸模式，伸缩后重新赋值
         normal = [normal resizableImageWithCapInsets:insets resizingMode:UIImageResizingModeStretch];
+        
+        [_loadingIndicator stopAnimating];
         _refreshBtn.hidden = YES;
     }
     [_contentBtn setBackgroundImage:normal forState:UIControlStateNormal];
+    
+    
 }
 
 

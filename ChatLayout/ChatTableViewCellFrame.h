@@ -27,7 +27,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class ChatMessage;
+#import "ChatMessage.h"
 
 @interface ChatTableViewCellFrame : NSObject
 
