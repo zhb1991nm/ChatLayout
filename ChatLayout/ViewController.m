@@ -17,7 +17,7 @@
 #define TEXTVIEW_BG_HEIGHT 40.0f
 #define INPUTVIEW_HEIGHT (TEXTVIEW_HEIGHT + 2 * marginTop)
 
-@interface ViewController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate>{
+@interface ViewController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,ChatTableViewCellDelegate>{
     NSMutableArray  *_allMessagesFrame;
     BOOL keyboardShowing;
     CGFloat originalHeight;
@@ -181,6 +181,7 @@
     }
     
     // 设置数据
+    cell.delegate = self;
     cell.chatCellFrame = _allMessagesFrame[indexPath.row];
     
     return cell;
@@ -189,6 +190,32 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     return [_allMessagesFrame[indexPath.row] cellHeight];
+}
+
+#pragma mark - tableviewcell代理方法
+-(void)chatTableViewCell:(ChatTableViewCell *)cell didLongPressedOnContentButton:(ChatMessage *)chatMessage{
+    NSLog(@"long click content");
+}
+
+-(void)chatTableViewCell:(ChatTableViewCell *)cell didOnClickHeadIcon:(MessageType)messageType{
+    switch (messageType) {
+        case MessageTypeMe:
+            NSLog(@"click my icon");
+            break;
+        case MessageTypeOther:
+            NSLog(@"click other icon");
+            break;
+        default:
+            break;
+    }
+}
+
+-(void)chatTableViewCell:(ChatTableViewCell *)cell didOnClickResendButton:(ChatMessage *)chatMessage{
+    NSIndexPath *indexPath = [chatTableView indexPathForCell:cell];
+    NSLog(@"click resend button %ld",(long)indexPath.row);
+    ChatTableViewCellFrame *cellFrame =  _allMessagesFrame[indexPath.row];
+    cellFrame.chatMessage.statusType = MessageSendStatusType_waiting;
+    [chatTableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath,nil] withRowAnimation:UITableViewRowAnimationNone];
 }
 
 #pragma mark - uiscrollview 代理方法

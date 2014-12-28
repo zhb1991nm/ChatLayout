@@ -22,8 +22,8 @@
 
 #define kContentW ([UIScreen mainScreen].bounds.size.width - 2 * (kMargin + kIconWH + kContentLeft + kContentRight)) //内容宽度
 
-#define kRefreshWH 25 //重发按钮宽高
-#define kRefreshRight 10 //重发按钮与文本内容的间隔
+#define kResendWH 25 //重发按钮宽高
+#define kResendRight 10 //重发按钮与文本内容的间隔
 
 #import <Foundation/Foundation.h>
 
@@ -37,7 +37,7 @@
 
 @property (nonatomic, assign, readonly) CGRect contentF;
 
-@property (nonatomic, assign, readonly) CGRect refreshF;
+@property (nonatomic, assign, readonly) CGRect resendF;
 
 @property (nonatomic, assign, readonly) CGFloat cellHeight; //cell高度
 

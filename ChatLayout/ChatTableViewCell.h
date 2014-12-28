@@ -9,10 +9,22 @@
 #import <UIKit/UIKit.h>
 #import "ChatTableViewCellFrame.h"
 
+@class ChatTableViewCell;
+
+@protocol ChatTableViewCellDelegate <NSObject>
+
+-(void)chatTableViewCell:(ChatTableViewCell *)cell didOnClickHeadIcon:(MessageType)messageType;//头像点击事件
+
+-(void)chatTableViewCell:(ChatTableViewCell *)cell didOnClickResendButton:(ChatMessage *)chatMessage;//重发事件
+
+-(void)chatTableViewCell:(ChatTableViewCell *)cell didLongPressedOnContentButton:(ChatMessage *)chatMessage;//长按事件
+
+@end
+
 @interface ChatTableViewCell : UITableViewCell
 
 @property (nonatomic,strong) ChatTableViewCellFrame *chatCellFrame;
 
-@property (nonatomic,assign) MessageSendStatusType statusType;
+@property (nonatomic,assign) id<ChatTableViewCellDelegate> delegate;
 
 @end

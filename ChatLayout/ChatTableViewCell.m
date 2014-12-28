@@ -14,7 +14,7 @@
     UIButton    *_timeBtn;
     UIButton *_iconView;
     UIButton    *_contentBtn;
-    UIButton *_refreshBtn;
+    UIButton *_resendBtn;
     UIActivityIndicatorView *_loadingIndicator;
 }
 
@@ -26,7 +26,6 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
-        self.statusType = MessageSendStatusType_waiting;
 
         // 1、创建时间按钮
         _timeBtn = [[UIButton alloc] init];
@@ -39,6 +38,8 @@
         
         // 2、创建头像
         _iconView = [[UIButton alloc] init];
+        
+        [_iconView addTarget:self action:@selector(iconButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:_iconView];
         
         // 3、创建内容
@@ -49,11 +50,16 @@
         _contentBtn.titleLabel.numberOfLines = 0;
         
         [self.contentView addSubview:_contentBtn];
+        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(contentBtnLong:)];
+        longPress.minimumPressDuration = 0.8; //定义按的时间
+        [_contentBtn addGestureRecognizer:longPress];
+        
         // 4、创建重发按钮
-        _refreshBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_refreshBtn setImage:[UIImage imageNamed:@"chat_refresh.png"] forState:UIControlStateNormal];
-        _refreshBtn.hidden = YES;
-        [self.contentView addSubview:_refreshBtn];
+        _resendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_resendBtn setImage:[UIImage imageNamed:@"chat_refresh.png"] forState:UIControlStateNormal];
+        _resendBtn.hidden = YES;
+        [_resendBtn addTarget:self action:@selector(resendBtnOnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [self.contentView addSubview:_resendBtn];
         // 5、等待动画
         _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         _loadingIndicator.hidesWhenStopped = YES;
@@ -63,7 +69,6 @@
 }
 
 -(void)setChatCellFrame:(ChatTableViewCellFrame *)chatCellFrame{
-    self.statusType = chatCellFrame.chatMessage.statusType;
     _chatCellFrame = chatCellFrame;
     ChatMessage *message = chatCellFrame.chatMessage;
     
@@ -96,23 +101,23 @@
         UIEdgeInsets insets = UIEdgeInsetsMake(top, left, bottom, right);
         // 指定为拉伸模式，伸缩后重新赋值
         normal = [normal resizableImageWithCapInsets:insets resizingMode:UIImageResizingModeStretch];
-        _refreshBtn.frame = chatCellFrame.refreshF;
-        _loadingIndicator.center = _refreshBtn.center;
+        _resendBtn.frame = chatCellFrame.resendF;
+        _loadingIndicator.center = _resendBtn.center;
         
-        switch (self.statusType) {
+        switch (self.chatCellFrame.chatMessage.statusType) {
             case MessageSendStatusType_failed:
                 [_loadingIndicator stopAnimating];
-                _refreshBtn.hidden = NO;
+                _resendBtn.hidden = NO;
                 break;
                 
             case MessageSendStatusType_success:
                 [_loadingIndicator stopAnimating];
-                _refreshBtn.hidden = YES;
+                _resendBtn.hidden = YES;
                 break;
                 
             case MessageSendStatusType_waiting:
                 [_loadingIndicator startAnimating];
-                _refreshBtn.hidden = YES;
+                _resendBtn.hidden = YES;
                 break;
             default:
                 break;
@@ -130,14 +135,38 @@
         normal = [normal resizableImageWithCapInsets:insets resizingMode:UIImageResizingModeStretch];
         
         [_loadingIndicator stopAnimating];
-        _refreshBtn.hidden = YES;
+        _resendBtn.hidden = YES;
     }
     [_contentBtn setBackgroundImage:normal forState:UIControlStateNormal];
     
     
 }
 
+-(void)iconButtonOnClick:(UIButton *)sender{
+    if (self.delegate) {
+        if ([self.delegate respondsToSelector:@selector(chatTableViewCell:didOnClickHeadIcon:)]) {
+            [self.delegate chatTableViewCell:self didOnClickHeadIcon:self.chatCellFrame.chatMessage.type];
+        }
+    }
+}
 
+-(void)contentBtnLong:(UIButton *)sender{
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        if (self.delegate) {
+            if ([self.delegate respondsToSelector:@selector(chatTableViewCell:didLongPressedOnContentButton:)]) {
+                [self.delegate chatTableViewCell:self didLongPressedOnContentButton:self.chatCellFrame.chatMessage];
+            }
+        }
+    }
+}
+
+-(void)resendBtnOnClick:(UIButton *)sender{
+    if (self.delegate) {
+        if ([self.delegate respondsToSelector:@selector(chatTableViewCell:didOnClickResendButton:)]) {
+            [self.delegate chatTableViewCell:self didOnClickResendButton:self.chatCellFrame.chatMessage];
+        }
+    }
+}
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];

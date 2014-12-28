@@ -41,9 +41,9 @@
     
     if (chatMessage.type == MessageTypeMe) {
         contentX = iconX - kMargin - contentSize.width - kContentLeft - kContentRight;
-        _refreshF = CGRectMake(contentX - kRefreshWH - kRefreshRight, contentY + (contentSize.height + kContentTop + kContentBottom - kRefreshWH) / 2, kRefreshWH, kRefreshWH);
+        _resendF = CGRectMake(contentX - kResendWH - kResendRight, contentY + (contentSize.height + kContentTop + kContentBottom - kResendWH) / 2, kResendWH, kResendWH);
     }else{
-        _refreshF = CGRectZero;
+        _resendF = CGRectZero;
     }
         
     
