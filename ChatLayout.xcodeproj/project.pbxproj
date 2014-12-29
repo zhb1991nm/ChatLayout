@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B1E2F58D1A50E8E100667188 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = B1E2F5891A50E8E100667188 /* GCDAsyncSocket.m */; };
 		FD6CDA561A4FCAF500E9E707 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FD6CDA551A4FCAF500E9E707 /* main.m */; };
 		FD6CDA591A4FCAF500E9E707 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FD6CDA581A4FCAF500E9E707 /* AppDelegate.m */; };
 		FD6CDA5C1A4FCAF500E9E707 /* ChatLayout.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FD6CDA5A1A4FCAF500E9E707 /* ChatLayout.xcdatamodeld */; };
@@ -40,6 +41,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B1E2F5881A50E8E100667188 /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
+		B1E2F5891A50E8E100667188 /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
+		B1E2F58C1A50E8E100667188 /* TcpClientDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TcpClientDelegate.h; sourceTree = "<group>"; };
 		FD6CDA501A4FCAF500E9E707 /* ChatLayout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatLayout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD6CDA541A4FCAF500E9E707 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FD6CDA551A4FCAF500E9E707 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -92,6 +96,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B1E2F5871A50E8B300667188 /* TcpClient */ = {
+			isa = PBXGroup;
+			children = (
+				B1E2F5881A50E8E100667188 /* GCDAsyncSocket.h */,
+				B1E2F5891A50E8E100667188 /* GCDAsyncSocket.m */,
+				B1E2F58C1A50E8E100667188 /* TcpClientDelegate.h */,
+			);
+			name = TcpClient;
+			sourceTree = "<group>";
+		};
 		FD6CDA471A4FCAF500E9E707 = {
 			isa = PBXGroup;
 			children = (
@@ -113,6 +127,7 @@
 		FD6CDA521A4FCAF500E9E707 /* ChatLayout */ = {
 			isa = PBXGroup;
 			children = (
+				B1E2F5871A50E8B300667188 /* TcpClient */,
 				FD6CDA571A4FCAF500E9E707 /* AppDelegate.h */,
 				FD6CDA581A4FCAF500E9E707 /* AppDelegate.m */,
 				FD6CDA5D1A4FCAF500E9E707 /* ViewController.h */,
@@ -291,6 +306,7 @@
 				FD6CDA591A4FCAF500E9E707 /* AppDelegate.m in Sources */,
 				FD6CDA5C1A4FCAF500E9E707 /* ChatLayout.xcdatamodeld in Sources */,
 				FD6CDA991A4FCC4400E9E707 /* ChatTableViewCellFrame.m in Sources */,
+				B1E2F58D1A50E8E100667188 /* GCDAsyncSocket.m in Sources */,
 				FD6CDA931A4FCC3200E9E707 /* ChatMessage.m in Sources */,
 				FD6CDA5F1A4FCAF500E9E707 /* ViewController.m in Sources */,
 				FD6CDA561A4FCAF500E9E707 /* main.m in Sources */,
@@ -488,6 +504,7 @@
 				FD6CDA781A4FCAF500E9E707 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		FD6CDA791A4FCAF500E9E707 /* Build configuration list for PBXNativeTarget "ChatLayoutTests" */ = {
 			isa = XCConfigurationList;
@@ -496,6 +513,7 @@
 				FD6CDA7B1A4FCAF500E9E707 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
