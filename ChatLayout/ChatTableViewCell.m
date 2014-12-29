@@ -92,7 +92,7 @@
     
     UIImage *normal;
     if (message.type == MessageTypeMe) {
-        normal = [UIImage scaledImage:@"chat_to1.png" size:CGSizeMake(142.0f / 3.0f, 40.0f)];//47.333 * 40
+        normal = [UIImage scaledImage:@"chat_to.png" size:CGSizeMake(142.0f / 3.0f, 40.0f)];//47.333 * 40
         
         CGFloat top = 30; // 顶端盖高度
         CGFloat bottom = 8 ; // 底端盖高度
