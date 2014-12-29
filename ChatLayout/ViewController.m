@@ -22,6 +22,8 @@
     BOOL keyboardShowing;
     CGFloat originalHeight;
     CGFloat textview_contentsize_height;
+    CGFloat chatTableView_original_height;
+    CGFloat keyboardHeight;
 }
 
 @property (nonatomic,strong) UITableView *chatTableView;
@@ -39,15 +41,17 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self loadSubviews];
     [self initData];
+    [self loadSubviews];
     [self setNotification];
     [chatTableView reloadData];
     // Do any additional setup after loading the view, typically from a nib.
 }
 
 -(void)viewDidAppear:(BOOL)animated{
-    [chatTableView setContentOffset:CGPointMake(0, chatTableView.contentSize.height - chatTableView.bounds.size.height) animated:NO];
+    if (_allMessagesFrame.count > 0) {
+        [chatTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_allMessagesFrame.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+    }
 }
 
 -(void)loadSubviews{
@@ -61,29 +65,36 @@
     textview_contentsize_height = TEXTVIEW_HEIGHT;
     originalHeight = textView.contentSize.height;
     _allMessagesFrame = [NSMutableArray array];
-    NSString *previousTime = nil;
-    NSArray *array = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"messages" ofType:@"plist"]];
-    
-    for (NSDictionary *dict in array) {
-        
-        ChatTableViewCellFrame *messageFrame = [[ChatTableViewCellFrame alloc] init];
-        ChatMessage *message = [[ChatMessage alloc] init];
-        message.dict = dict;
-        message.statusType = MessageSendStatusType_failed;
-        messageFrame.showTime = ![previousTime isEqualToString:message.time];
-        messageFrame.chatMessage = message;
-        previousTime = message.time;
-        [_allMessagesFrame addObject:messageFrame];
-    }
+    //    NSString *previousTime = nil;
+    //    NSArray *array = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"messages" ofType:@"plist"]];
+    //
+    //    for (NSDictionary *dict in array) {
+    //
+    //        ChatTableViewCellFrame *messageFrame = [[ChatTableViewCellFrame alloc] init];
+    //        ChatMessage *message = [[ChatMessage alloc] init];
+    //        message.dict = dict;
+    //        message.statusType = MessageSendStatusType_failed;
+    //        messageFrame.showTime = ![previousTime isEqualToString:message.time];
+    //        messageFrame.chatMessage = message;
+    //        previousTime = message.time;
+    //        [_allMessagesFrame addObject:messageFrame];
+    //    }
 }
 
 -(void)loadchatTableView{
-    chatTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - INPUTVIEW_HEIGHT) style:UITableViewStylePlain];
+    chatTableView_original_height = self.view.frame.size.height - INPUTVIEW_HEIGHT;
+    chatTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, chatTableView_original_height) style:UITableViewStylePlain];
     chatTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     chatTableView.allowsSelection = NO;
     chatTableView.backgroundColor = [UIColor clearColor];
     chatTableView.dataSource = self;
     chatTableView.delegate = self;
+    if (IOS7) {
+        UIView *tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, chatTableView.frame.size.width, 64)];
+        tableHeaderView.backgroundColor = [UIColor clearColor];
+        chatTableView.tableHeaderView = tableHeaderView;
+    }
+    
     [self.view addSubview:chatTableView];
     
     UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake((chatTableView.frame.size.width - 1)/2 , -320, 1, 320)];
@@ -148,19 +159,28 @@
     keyboardShowing = YES;
     tapView.hidden = NO;
     CGRect rect = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGFloat ty = - rect.size.height;
+    keyboardHeight = rect.size.height;
     [UIView animateWithDuration:[note.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue] animations:^{
-        self.view.transform = CGAffineTransformMakeTranslation(0, ty);
+        self.view.transform = CGAffineTransformMakeTranslation(0, - keyboardHeight);
+        chatTableView.frame = CGRectMake(chatTableView.frame.origin.x, keyboardHeight, chatTableView.frame.size.width, self.view.frame.size.height - INPUTVIEW_HEIGHT - keyboardHeight);
+    }completion:^(BOOL finished) {
+        chatTableView.frame = CGRectMake(chatTableView.frame.origin.x, keyboardHeight, chatTableView.frame.size.width, self.view.frame.size.height - INPUTVIEW_HEIGHT - keyboardHeight);
+        if (_allMessagesFrame.count > 0) {
+            [chatTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_allMessagesFrame.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+        }
     }];
     
 }
 #pragma mark 键盘即将退出
 - (void)keyBoardWillHide:(NSNotification *)note{
-    
+    chatTableView.frame = CGRectMake(chatTableView.frame.origin.x, 0, chatTableView.frame.size.width, chatTableView_original_height);
     [UIView animateWithDuration:[note.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue] animations:^{
         self.view.transform = CGAffineTransformIdentity;
+        
     } completion:^(BOOL finished) {
         keyboardShowing = NO;
+        //chatTableView.frame = CGRectMake(chatTableView.frame.origin.x, 0, chatTableView.frame.size.width, chatTableView_original_height);
+        keyboardHeight = 0;
     }];
 }
 
@@ -259,8 +279,11 @@
     
     inputView.frame = CGRectMake(inputView.frame.origin.x, self.view.frame.size.height - inputViewHeight, inputView.frame.size.width, inputViewHeight);
     
-    chatTableView.frame = CGRectMake(chatTableView.frame.origin.x, chatTableView.frame.origin.y, chatTableView.frame.size.width, self.view.frame.size.height - inputViewHeight);
-    [chatTableView setContentOffset:CGPointMake(0, chatTableView.contentSize.height - chatTableView.bounds.size.height) animated:NO];
+    chatTableView.frame = CGRectMake(chatTableView.frame.origin.x, keyboardHeight, chatTableView.frame.size.width, self.view.frame.size.height - inputViewHeight - keyboardHeight);
+    if (_allMessagesFrame.count > 0) {
+        [chatTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_allMessagesFrame.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+    }
+    
 }
 
 -(void)textViewEditChanged:(NSNotification *)obj{
